@@ -1,0 +1,36 @@
+# Production stack: docker compose -f docker-compose.prod.yml up --build -d
+#
+# - Only the frontend is published (:3000). The backend stays on the internal
+#   Docker network and is reached through the Next.js /svc/api rewrite proxy.
+# - Terminate TLS with a reverse proxy (nginx, Traefik, Caddy) in front of the
+#   frontend; do not expose the Node server directly to the internet.
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: prod
+    environment:
+      # Public path prefix so OpenAPI/Swagger resolve behind the proxy.
+      ROOT_PATH: "/svc/api"
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        # Baked into the standalone build — rewrites resolve at build time,
+        # so changing this requires an image rebuild (see frontend/Dockerfile).
+        BACKEND_INTERNAL_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        # Waits for the HEALTHCHECK defined in backend/Dockerfile (prod target).
+        condition: service_healthy

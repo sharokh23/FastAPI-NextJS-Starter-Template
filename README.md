@@ -58,6 +58,19 @@ Validate the Compose file (authoritative check; use this if your editor shows a 
 docker compose config --quiet && echo OK
 ```
 
+## Production build (Docker)
+
+[docker-compose.prod.yml](docker-compose.prod.yml) builds the production targets of both Dockerfiles:
+
+- **frontend** — multi-stage [standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output) build (`next build` → `node server.js`), non-root user, container healthcheck. Standalone mode serializes `next.config.ts` (including resolved rewrites) into the build, so `BACKEND_INTERNAL_URL` is a **build arg** in production — changing it requires a rebuild, not just a restart.
+- **backend** — `uv sync --frozen --no-dev`, non-root user, healthcheck on `/status`, and `--proxy-headers` so FastAPI sees the original request scheme/host. The backend port is **not** published to the host; all traffic flows through the `/svc/api` rewrite on the frontend.
+
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+For real deployments, terminate TLS with a reverse proxy (nginx, Traefik, Caddy) in front of the frontend — [Next.js recommends](https://nextjs.org/docs/app/guides/self-hosting#reverse-proxy) not exposing the Node server directly to the internet.
+
 ## `/svc/api` proxy and Swagger
 
 - **`BACKEND_INTERNAL_URL`** (Next server env): base URL of FastAPI inside the Docker network (e.g. `http://backend:8000`). Enables rewrites in `next.config.ts`.

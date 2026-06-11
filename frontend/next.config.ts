@@ -7,6 +7,12 @@ const backendInternal =
 const isDockerDev = process.env.DOCKER_DEV === "true";
 
 const nextConfig: NextConfig = {
+  /**
+   * Standalone output for the production Docker image (node server.js).
+   * Note: next.config (including resolved rewrites) is serialized into the
+   * build, so BACKEND_INTERNAL_URL must be set at build time for production.
+   */
+  output: "standalone",
   turbopack: {
     root: process.cwd(),
   },
