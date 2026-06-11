@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? "/svc/api";
@@ -47,9 +48,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-1 flex-col bg-black text-white">
       <header className="border-b border-zinc-800">
         <nav className="mx-auto flex max-w-[1200px] flex-col items-center gap-4 px-4 py-4 sm:flex-row sm:gap-8 sm:px-8">
-          <a href="/" className="text-xl font-semibold text-white no-underline">
+          <Link
+            href="/"
+            className="text-xl font-semibold text-white no-underline"
+          >
             {NAV_BRAND}
-          </a>
+          </Link>
           <div className="flex flex-wrap justify-center gap-6 sm:ml-auto sm:justify-end">
             <a
               href={`${BACKEND}/docs`}
