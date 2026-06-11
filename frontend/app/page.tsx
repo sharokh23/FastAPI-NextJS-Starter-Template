@@ -29,6 +29,7 @@ const vercelJsonSnippet = `<span class="text-zinc-500">// vercel.json</span>
 
 export default function Home() {
   const [response, setResponse] = useState<unknown>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<LoadingState>({
     frontend: false,
     backend: false,
@@ -36,9 +37,16 @@ export default function Home() {
 
   async function call(key: LoadingKey, url: string) {
     setLoading((prev) => ({ ...prev, [key]: true }));
+    setError(null);
     try {
       const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`Request to ${url} failed with status ${res.status}`);
+      }
       setResponse(await res.json());
+    } catch (err) {
+      setResponse(null);
+      setError(err instanceof Error ? err.message : "Request failed");
     } finally {
       setLoading((prev) => ({ ...prev, [key]: false }));
     }
@@ -140,13 +148,25 @@ export default function Home() {
           </div>
         </div>
 
-        {response != null && (
-          <div className="mt-6 w-full max-w-[900px]">
-            <pre className="overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-950 p-6 text-left font-mono text-[0.8rem] leading-snug text-zinc-200">
-              {JSON.stringify(response, null, 2)}
-            </pre>
-          </div>
-        )}
+        <div
+          aria-live="polite"
+          className="flex w-full flex-col items-center"
+        >
+          {error != null && (
+            <div className="mt-6 w-full max-w-[900px]">
+              <p className="rounded-lg border border-red-900 bg-red-950/40 p-4 text-left text-sm text-red-300">
+                {error}
+              </p>
+            </div>
+          )}
+          {response != null && (
+            <div className="mt-6 w-full max-w-[900px]">
+              <pre className="overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-950 p-6 text-left font-mono text-[0.8rem] leading-snug text-zinc-200">
+                {JSON.stringify(response, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
