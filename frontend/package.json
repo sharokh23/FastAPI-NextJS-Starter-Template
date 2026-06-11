@@ -1,6 +1,6 @@
 {
-  "name": "Sakeena Matchmaking",
-  "version": "1.0.0",
+  "name": "fastapi-nextjs-starter-template-frontend",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

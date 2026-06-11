@@ -1,4 +1,4 @@
-# Next.js + FastAPI Monorepo
+# FastAPI + Next.js Starter Template
 
 Minimal starter with a **Next.js** app (port 3000) and a **FastAPI** API (port 8000). The browser talks to FastAPI under **`/svc/api/*`** on the Next.js origin; Next rewrites those requests to the backend when `BACKEND_INTERNAL_URL` is set (see `frontend/next.config.ts`).
 
