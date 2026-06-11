@@ -4,7 +4,7 @@ export async function GET() {
   return NextResponse.json({
     service: "frontend",
     framework: "nextjs",
-    message: "Hello from Next.js API route",
+    message: "Salaam from Next.js API route",
     timestamp: new Date().toISOString(),
   });
 }
