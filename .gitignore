@@ -41,6 +41,3 @@ venv.bak/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# lockfiles (generated per-machine)
-package-lock.json
